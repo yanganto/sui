@@ -29,6 +29,5 @@ in
     DEV_SHELL_NAME = "sui";
     LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
     BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
-
   });
 }

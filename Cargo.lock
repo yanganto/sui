@@ -6393,7 +6393,7 @@ checksum = "9dbbfed4e59ba9750e15ba154fdfd9329cee16ff3df539c2666b70f58cc32105"
 [[package]]
 name = "json_to_table"
 version = "0.6.0"
-source = "git+https://github.com/zhiburt/tabled/?rev=e449317a1c02eb6b29e409ad6617e5d9eb7b3bd4#e449317a1c02eb6b29e409ad6617e5d9eb7b3bd4"
+source = "git+https://github.com/yanganto/tabled/?branch=rm-file-link#d0fb1cdf9ed1ba5bd227da9c7ed261483d56f241"
 dependencies = [
  "serde_json",
  "tabled",
