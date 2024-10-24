@@ -4,7 +4,6 @@ let
   craneLib = (crane.mkLib pkgs).overrideToolchain (p: specificRust);
   cargoToml = "${self}/Cargo.toml";
   cargoTomlConfig = builtins.fromTOML (builtins.readFile cargoToml);
-  pname = "sui";
   version = cargoTomlConfig.workspace.package.version;
   # NOTE: do not clean Source code, else include_str! wil not work
   src = self;
@@ -15,7 +14,6 @@ let
     openssl
   ];
   nativeBuildInputs = with pkgs; [ pkg-config ];
-  cargoExtraArgs = "-p sui";
   outputHashes = {
     "git+https://github.com/mystenlabs/anemo.git?rev=e609f7697ed6169bf0760882a0b6c032a57e4f3b#e609f7697ed6169bf0760882a0b6c032a57e4f3b" = "sha256-kZaw7j2O4PoMEtJ0TfTV1z8VYw3IgKivEFoqKT4YXGE=";
     "git+https://github.com/nextest-rs/nexlint.git?rev=7ce56bd591242a57660ed05f14ca2483c37d895b#7ce56bd591242a57660ed05f14ca2483c37d895b" = "sha256-L9vf+djTKmcz32IhJoBqAghQ8mS3sc9I2C3BBDdUxkQ=";
@@ -34,21 +32,35 @@ let
   # NOTE:
   # dont check to avoid --all-targets
   doCheck = false;
-  preConfigure = ''
-    export LIBCLANG_PATH="${pkgs.libclang.lib}/lib";
-    export BINDGEN_EXTRA_CLANG_ARGS="-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
-    export GIT_REVISION="unstable";
-  '';
-  cargoArtifacts = craneLib.buildDepsOnly {
-   inherit pname version src cargoToml buildInputs nativeBuildInputs outputHashes cargoExtraArgs doCheck preConfigure;
+  env = {
+    GIT_REVISION="unstable";
     LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
     BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
+    CARGO_PROFILE = "";
   };
 in
 rec {
   default = sui;
-  # sui = rustPlatform.buildRustPackage {
+
   sui = craneLib.buildPackage {
-    inherit pname version src cargoToml cargoArtifacts buildInputs nativeBuildInputs outputHashes cargoExtraArgs doCheck preConfigure;
+    inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
+    pname = "sui";
+    cargoExtraArgs = "-p sui";
+    cargoArtifacts = craneLib.buildDepsOnly {
+     inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
+      pname = "sui";
+      cargoExtraArgs  = "-p sui";
+    };
+  };
+
+  sui-move = craneLib.buildPackage {
+    inherit version src env cargoToml outputHashes doCheck;
+    pname = "sui-move";
+    cargoExtraArgs = "--features=unit_test -p sui-move";
+    cargoArtifacts = craneLib.buildDepsOnly {
+     inherit version src env cargoToml outputHashes doCheck;
+      pname = "sui";
+      cargoExtraArgs  = "--features=unit_test -p sui-move";
+    };
   };
 }
