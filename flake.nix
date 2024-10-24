@@ -25,10 +25,11 @@
         pkgs = import nixpkgs {
           inherit system overlays;
         };
+        packages = (import ./nix/packages.nix { inherit self; inherit pkgs; toolchain = ./rust-toolchain.toml; inherit crane; });
       in
       {
-        devShells = (import ./nix/shell.nix { inherit pkgs; toolchain = ./rust-toolchain.toml; });
-        packages = (import ./nix/packages.nix { inherit self; inherit pkgs; toolchain = ./rust-toolchain.toml; inherit crane; });
+        inherit packages;
+        devShells = (import ./nix/shell.nix { inherit pkgs; toolchain = ./rust-toolchain.toml; sui = packages.sui;});
       }
     );
 }

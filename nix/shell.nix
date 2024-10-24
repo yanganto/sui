@@ -1,4 +1,4 @@
-{ pkgs, toolchain }:
+{ pkgs, toolchain, sui }:
 let
   specificRust = pkgs.rust-bin.fromRustupToolchainFile toolchain;
 in
@@ -10,12 +10,12 @@ in
   core = pkgs.mkShell ({
     name = "core";
     buildInputs = with pkgs; [specificRust ];
-    DEV_SHELL_NAME = "core";
+    DEV_SHELL_NAME = "sui#core";
   });
 
   # Dev shell for most binaies
   # NOTE: sui-aws-orchestrator needs addtional dependency aws-sdk-ec2
-  default = pkgs.mkShell ({
+  dev = pkgs.mkShell ({
     buildInputs = with pkgs; [
       specificRust
       openssl
@@ -26,8 +26,13 @@ in
       llvmPackages.libcxxClang
       pkg-config
     ];
-    DEV_SHELL_NAME = "sui";
+    DEV_SHELL_NAME = "sui#dev";
     LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
     BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
+  });
+
+  default = pkgs.mkShell ({
+    buildInputs = with pkgs; [ sui ];
+    DEV_SHELL_NAME = "sui#default";
   });
 }
