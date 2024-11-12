@@ -9,7 +9,7 @@ in
   # sui-source-validation-service, sui-test-validator, suiop
   core = pkgs.mkShell ({
     name = "core";
-    buildInputs = with pkgs; [specificRust ];
+    buildInputs = [ specificRust ];
     DEV_SHELL_NAME = "sui#core";
   });
 
@@ -31,11 +31,13 @@ in
     BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
   });
 
+  # A shell with full sui command
   default = pkgs.mkShell ({
     buildInputs = with packages; [ sui ];
     DEV_SHELL_NAME = "sui#default";
   });
 
+  # A slim shell focus on contract development
   slim = pkgs.mkShell ({
     buildInputs = with packages; [ sui-move ];
     DEV_SHELL_NAME = "sui#slim";

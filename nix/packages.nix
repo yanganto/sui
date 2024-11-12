@@ -33,7 +33,6 @@ let
     GIT_REVISION="unstable";
     LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
     BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${pkgs.llvmPackages.libcxxClang}/resource-root/lib/";
-    CARGO_PROFILE = "";
   };
 in
 rec {
@@ -44,20 +43,22 @@ rec {
     pname = "sui";
     cargoExtraArgs = "-p sui";
     cargoArtifacts = craneLib.buildDepsOnly {
-     inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
+      inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
       pname = "sui";
       cargoExtraArgs  = "-p sui";
     };
   };
 
   sui-move = craneLib.buildPackage {
-    inherit version src env cargoToml outputHashes doCheck;
+    inherit version src cargoToml outputHashes doCheck;
     pname = "sui-move";
-    cargoExtraArgs = "--features=unit_test -p sui-move";
+    cargoExtraArgs = "--features=unit_test,coverage -p sui-move";
+    env = env // { CARGO_PROFILE = ""; };
     cargoArtifacts = craneLib.buildDepsOnly {
-     inherit version src env cargoToml outputHashes doCheck;
+      inherit version src cargoToml outputHashes doCheck;
       pname = "sui";
-      cargoExtraArgs  = "--features=unit_test -p sui-move";
+      cargoExtraArgs = "--features=unit_test,coverage  -p sui-move";
+      env = env // { CARGO_PROFILE = ""; };
     };
   };
 }
