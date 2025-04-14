@@ -41,23 +41,23 @@ rec {
   sui = craneLib.buildPackage {
     inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
     pname = "sui";
-    cargoExtraArgs = "-p sui";
+    cargoExtraArgs = "-p sui-move --features tracing";
     cargoArtifacts = craneLib.buildDepsOnly {
       inherit version src env cargoToml buildInputs nativeBuildInputs outputHashes doCheck;
       pname = "sui";
-      cargoExtraArgs  = "-p sui";
+      cargoExtraArgs  = "-p sui-move --features tracing";
     };
   };
 
   sui-move = craneLib.buildPackage {
     inherit version src cargoToml outputHashes doCheck;
     pname = "sui-move";
-    cargoExtraArgs = "-p sui-move";
+    cargoExtraArgs = "-p sui-move --features tracing";
     env = env // { CARGO_PROFILE = ""; };
     cargoArtifacts = craneLib.buildDepsOnly {
       inherit version src cargoToml outputHashes doCheck;
       pname = "sui";
-      cargoExtraArgs = "-p sui-move";
+      cargoExtraArgs = "-p sui-move --features tracing";
       env = env // { CARGO_PROFILE = ""; };
     };
   };

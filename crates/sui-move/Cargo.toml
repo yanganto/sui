@@ -60,4 +60,5 @@ normal = ["jemalloc-ctl"]
 workspace = true
 
 [features]
+default = ["tracing"]
 tracing = []
